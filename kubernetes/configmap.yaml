@@ -1,0 +1,13 @@
+## informationen für die beide deployment speichen werden
+# A ConfigMap is used to store non-secret key-value configuration data. 
+# For example, environment variables, application configuration options, etc.
+
+Benefit: Allows external configuration of your application without the need to modify the code.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feedback-app-config
+data:
+  DB_NAME: feedbackdb
+  DB_HOST: feedback-app-database-service
+  DB_PORT: "5432"
