@@ -1,45 +1,74 @@
 pipeline {
-    agent{
-        kubernetes{
+    agent {
+        kubernetes {
             label 'jenkins-docker-agent'
-            defaultContainer 'jnpl'
-            yaml ""
+            defaultContainer 'jnlp'
+            yaml """ 
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins: slave
+spec:
+  containers:
+  - name: docker
+    image: docker:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
+  volumes:
+  - hostPath:
+      path: /var/run/docker.sock
+    name: docker-socket            
+"""
         }
     }
+
+    triggers {
+        pollSCM('H/2 * * * *')
     }
     
     environment {
-        GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
+        GITHUB_REPO = 'https://github.com/rosaflores/feedback-app.git'
     }
     
-    stages {
-        stage('Checkout') {
+    stages {        
+        stage('Checkout') {           
             steps {
                 git url: "${GITHUB_REPO}", branch: 'main'
+            }            
+        }       
+        stage('Docker Build') {   
+            steps {
+                echo 'Building the app...'
+                container('docker') {
+                    sh 'docker build -t rosaflores/feedback-app:pipeline-test .'
+                }
+                echo 'Build successful.'
+            }    
+        }
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing the image to Docker Hub...'
+                container('docker') {
+                    sh 'docker push rosaflores/feedback-app:pipeline-test'
+                }
+                echo 'Push successful.'
             }
         }
-        
-        stage('Docker Build') {
+        stage('Kubernetes Deploy') {
             steps {
-                echo 'Building the app ..'
-                sh 'docekr build -t rosaflores/feedback-app:latest'
-                echo 'Build successful'
+                echo 'Deploying to Kubernetes cluster...'
+                sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                echo 'Deployment successful.'
             }
         }
-         stage('Docker Push') {
-            steps {
-                echo 'Pushing the image to Docker Hub.'
-                sh 'docker push rosaflores/feedback-app:pipepline-latest'
-                echo ' Push successful'
-            }
-         }
-
-         stage ('Kubernetes Deploy'){
-            steps{
-                echo 'Deploying to Kubernetess cluster ..'
-                sh ' kubectl '
-            }
-         }
-    
-    }
+    }   
 }
