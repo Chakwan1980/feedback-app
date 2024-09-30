@@ -42,32 +42,56 @@ spec:
     stages {        
         stage('Checkout') {           
             steps {
-                git url: "${GITHUB_REPO}", branch: 'main'
+                script {
+                    try {
+                        git url: "${GITHUB_REPO}", branch: 'main'
+                    } catch (Exception e) {
+                        error("Checkout failed: ${e.message}")
+                    }
+                }            
             }            
         }       
         stage('Docker Build') {   
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    sh 'docker build -t rosaflores/feedback-app:pipeline-test .'
+                    script {
+                        try {
+                            sh 'docker build -t rosaflores/feedback-app:pipeline-test .'
+                            echo 'Build successful.'
+                        } catch (Exception e) {
+                            error("Docker build failed: ${e.message}")
+                        }
+                    }
                 }
-                echo 'Build successful.'
             }    
         }
         stage('Docker Push') {
             steps {
                 echo 'Pushing the image to Docker Hub...'
                 container('docker') {
-                    sh 'docker push rosaflores/feedback-app:pipeline-test'
+                    script {
+                        try {
+                            sh 'docker push rosaflores/feedback-app:pipeline-test'
+                            echo 'Push successful.'
+                        } catch (Exception e) {
+                            error("Docker push failed: ${e.message}")
+                        }
+                    }
                 }
-                echo 'Push successful.'
             }
         }
         stage('Kubernetes Deploy') {
             steps {
                 echo 'Deploying to Kubernetes cluster...'
-                sh 'kubectl apply -f kubernetes/api-deployment.yaml'
-                echo 'Deployment successful.'
+                script {
+                    try {
+                        sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                        echo 'Deployment successful.'
+                    } catch (Exception e) {
+                        error("Kubernetes deployment failed: ${e.message}")
+                    }
+                }
             }
         }
     }   
