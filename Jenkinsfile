@@ -11,33 +11,34 @@ metadata:
     jenkins: slave
 spec:
   containers:
-  - name: docker
-    image: docker:latest
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "250m"
-      limits:
-        memory: "128Mi"
-        cpu: "250m"
-    volumeMounts:
-    - name: docker-socket
-      mountPath: /var/run/docker.sock
+ - name: docker
+  image: docker:latest
+  securityContext:
+    privileged: true
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+  volumeMounts:
+  - name: docker-socket
+    mountPath: /var/run/docker.sock
   volumes:
   - hostPath:
       path: /var/run/docker.sock
     name: docker-socket            
 """
-
         }
     }
 
     triggers {
-        pollSCM('H/2 * * * *')
+        pollSCM('H/2 * * * *') // Esto hará polling cada 2 minutos
     }
     
     environment {
-        GITHUB_REPO = 'https://github.com/rosaflores/feedback-app.git'
+        GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
     }
     
     stages {        
@@ -50,7 +51,7 @@ spec:
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    sh 'docker build -t rosaflores/feedback-app:pipeline-test'
+                    sh 'docker build -t rosaflores/feedback-app:pipeline-test .'
                 }
                 echo 'Build successful.'
             }    
@@ -66,7 +67,8 @@ spec:
         }
         stage('Kubernetes Deploy') {
             steps {
-                echo 'Deploying to kubernetes cluster...'
+                echo 'Deploying to Kubernetes cluster...'
+                // Asegúrate de que el archivo esté en la ubicación correcta y en el formato adecuado
                 sh 'kubectl apply -f kubernetes/api-deployment.yaml'
                 echo 'Deployment successful.'
             }
