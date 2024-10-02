@@ -75,5 +75,4 @@ spec:
         persistentVolumeClaim:
           claimName: feedback-database-pvc
 
-
  # This information is in docker compose.yaml           

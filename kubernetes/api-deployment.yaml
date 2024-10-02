@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: feedback-app-backend-api
-        image: galaataman/feedback-app:pipeline-test
+        image: rosaflores/feedback-app:pipeline-test
         resources:
           requests:
             memory: "64Mi"

@@ -2,7 +2,6 @@
 # A ConfigMap is used to store non-secret key-value configuration data. 
 # For example, environment variables, application configuration options, etc.
 
-Benefit: Allows external configuration of your application without the need to modify the code.
 apiVersion: v1
 kind: ConfigMap
 metadata:
