@@ -1,9 +1,51 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: jenkins-pod
+  labels:
+    jenkins: slave
 spec:
+  serviceAccountName: jenkins-sa
   containers:
-    - name: jenkins-agent
-      image: jenkins/inbound-agent:latest
-      args: ["-url", "http://jenkins:8080/", "secret", "worker"]
+  - name: docker
+    image: docker:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
+  - name: kubectl
+    image: lachlanevenson/k8s-kubectl:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+  - name: k6
+    image: grafana/k6:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+  volumes:
+  - hostPath:
+      path: /var/run/docker.sock
+    name: docker-socket
