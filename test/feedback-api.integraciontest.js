@@ -14,11 +14,22 @@ const createFeedback = () => {
 
     const response = http.post(`${BASE_URL}/feedback`, payload, { headers });
 
+    console.log('Response body:', response.body);
+
     check(response, {
-        'POST /feedback valid data: status code 201 (Created)': (res) => res.status === 201,
-        'POST /feedback response has message': (res) => res.json('message') === 'Feedback erfolgreich gespeichert.'
+        'POST /feedback valid data: status code 201 (Created)': (res) => {
+            console.log('Response status:', res.status);
+            return res.status === 201;
+        },
+        'POST /feedback response has message': (res) => {
+            const jsonResponse = res.json();
+            console.log('JSON response:', jsonResponse);
+            return jsonResponse.message.trim() === 'Feedback erfolgreich gespeichert.';
+        }
     });
 };
+
+
 
 // POST /feedback empty body
 const createFeedbackNoData = () => {
@@ -84,62 +95,47 @@ const createFeedbackInvalidData = () => {
 };
 
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-//GET / feedback
-
+// GET /feedback
 const getAllFeedback = () => {
-    const response = http.get (`${BASE_URL}/feedback`);
+    const response = http.get(`${BASE_URL}/feedback`);
 
-    check (response, { 
-        'GET /feedback status code 200 (ok)': (res)  => res.status === 200, 
-        'GET /feedback response contains an array' : (res) => Array.isArray (res.json())  //  preguntamos si lo que recibimos es un array 
+    check(response, {
+        'GET /feedback status code 200 (OK)': (res) => res.status === 200,
+        'GET /feedback response contains an array': (res) => Array.isArray(res.json())
     });
-}
+};
 
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-// DELETE /feedback/title
-
+// DELETE /feedback/:title
 const deleteFeedback = () => {
+    const response = http.del(`${BASE_URL}/feedback/Test Feedback`);
 
-    const response = http.delete (`${BASE_URL}/feedbac/Test Feedback`);
-
-    check (response, { 
-        'DELETE /feedback/:title status code 200 (ok)': (res)  => res.status === 200, 
-        'DELETE /feedback/:title response has message ' : (res) => (res.json('message'))  === 'Feedback erfolgreich gelöscht'
+    check(response, {
+        'DELETE /feedback/:title status code 200 (OK)': (res) => res.status === 200,
+        'DELETE /feedback/:title response has message': (res) => res.json('message') === 'Feedback erfolgreich geloescht.'
     });
-}
+};
 
+// DELETE /feedback/:title not found
+const deleteNonExistentFeedback = () => {
+    const response = http.del(`${BASE_URL}/feedback/NonExistentFeedback`);
 
-
-// DELTE /feedback/:tittle not found
-
-const deleteNonExistenFeedback = () => {
-
-    const response = http.delete (`${BASE_URL}/feedbac/Test Feedback/NonExistenFeedback`);
-
-    check (response, { 
-
-        'DELETE /feedback/:title status code 400 (Not found)': (res)  => res.status === 404, 
-        'DELETE /feedback/:title response has error message ' : (res) => (res.json('message'))  === 'Feedback wurde nich gefunden'
+    check(response, {
+        'DELETE /feedback/:title status code 404 (Not Found)': (res) => res.status === 404,
+        'DELETE /feedback/:title response has error message': (res) => res.json('message') === 'Feedback nicht gefunden.'
     });
-}
+};
 
 
-
-
-export default  function () {
-    createFeedback ();
-    createFeedbackInvalidData ();
-    createFeedbackNoData ();
-    createFeedbackNoText ();
+export default function () {
+    createFeedback();
+    createFeedbackNoData();
     createFeedbackNoTitle();
+    createFeedbackNoText();
+    createFeedbackInvalidData();
     getAllFeedback();
     deleteFeedback();
-    deleteNonExistenFeedback();
+    deleteNonExistentFeedback();
 }
 
+
+//  k6 run --env BASE_URL=http://127.0.0.1:57025 ./test/feedback-api.integraciontest.js

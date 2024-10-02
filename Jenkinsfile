@@ -2,43 +2,18 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-docker-agent'
-            defaultContainer 'jnlp'
-            yaml """ 
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    jenkins: slave
-spec:
-  containers:
- - name: docker
-  image: docker:latest
-  securityContext:
-    privileged: true
-  resources:
-    requests:
-      memory: "128Mi"
-      cpu: "250m"
-    limits:
-      memory: "128Mi"
-      cpu: "250m"
-  volumeMounts:
-  - name: docker-socket
-    mountPath: /var/run/docker.sock
-  volumes:
-  - hostPath:
-      path: /var/run/docker.sock
-    name: docker-socket            
-"""
+            yamlFile 'kubernetes_jenkins/jenkins-pod-template.yaml'
         }
     }
 
     triggers {
-        pollSCM('H/2 * * * *') // Esto hará polling cada 2 minutos
+        pollSCM('H/2 * * * *')
     }
     
     environment {
-        GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
+        GITHUB_REPO = 'https://github.com/atamankina/feedback-app.git'
+        DOCKER_IMAGE = 'galaataman/feedback-app:pipeline-test'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-token'
     }
     
     stages {        
@@ -51,7 +26,7 @@ spec:
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    sh 'docker build -t rosaflores/feedback-app:pipeline-test .'
+                    sh 'docker build -t $DOCKER_IMAGE .'
                 }
                 echo 'Build successful.'
             }    
@@ -60,17 +35,43 @@ spec:
             steps {
                 echo 'Pushing the image to Docker Hub...'
                 container('docker') {
-                    sh 'docker push rosaflores/feedback-app:pipeline-test'
+                    script {
+                        docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
+                            sh 'docker push $DOCKER_IMAGE'
+                        }
+                    }  
                 }
                 echo 'Push successful.'
             }
         }
-        stage('Kubernetes Deploy') {
+        stage('Kubernetes Deploy Dependencies') {
             steps {
-                echo 'Deploying to Kubernetes cluster...'
-                // Asegúrate de que el archivo esté en la ubicación correcta y en el formato adecuado
-                sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                echo 'Deploying to kubernetes cluster...'
+                container('kubectl') {
+                    sh 'kubectl apply -f kubernetes/secret.yaml'
+                    sh 'kubectl apply -f kubernetes/configmap.yaml'
+                    sh 'kubectl apply -f kubernetes/database-volume.yaml'
+                    sh 'kubectl apply -f kubernetes/database-deployment.yaml'
+                } 
                 echo 'Deployment successful.'
+            }
+        }
+        stage('Kubernetes Deploy API') {
+            steps {
+                echo 'Deploying to kubernetes cluster...'
+                container('kubectl') {
+                    sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                } 
+                echo 'Deployment successful.'
+            }
+        }
+        stage('Integration Tests') {
+            steps {
+                echo 'Running integration tests...'
+                container('k6') {
+                    sh 'k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js'
+                }
+                echo 'Integration tests ready.'
             }
         }
     }   
