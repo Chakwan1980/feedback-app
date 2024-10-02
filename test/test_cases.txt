@@ -1,0 +1,23 @@
+
+GET /feedback => status code: 200, the array with data is returned [data ] 
+                                     if there is no data, an empty array is returned []
+POST /feedback
+     + body:
+        {'title':'...'}
+        {'text':'...'} => status code: 201
+                            "message":"Feedback erfolgreich gespeichert"
+
+     no doby => status code: 400, "message": "title und text sind im body erfolgreich "    
+     no title => status code: 400, "message": "title und text sind im body erfolgreich "   
+     no text => status code: 400, "message": "title und text sind im body erfolgreich "
+     other attributes => status code:400,
+                         "message":"title und text sind im body erfolgreich"
+
+
+
+DELETE /feedback/title => 200, 
+                        "message":"Feedback erfolgreich geloscht"
+    no title, missing title => status code: 404,
+                         "message":"Feedback nicht gefunden"
+
+

@@ -13,7 +13,7 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-  type: NodePort
+  type: LoadBalancer
 
 
 ---
@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: feedback-app-backend-api
-        image: rosaflores/feedback-app:pipeline-test
+        image: galaataman/feedback-app:pipeline-test
         resources:
           requests:
             memory: "64Mi"
