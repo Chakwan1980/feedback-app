@@ -12,6 +12,8 @@ docker network create feedback-app-nw
 docker push rosaflores/feedback-app:v1
 docker push rosaflores/feedback-app:latest
 
+docker push rosaflores/feedback-app:latest
+
 # Run the postgres database container
 docker run \
     --name postgres-db \
