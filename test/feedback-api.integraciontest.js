@@ -129,3 +129,17 @@ const deleteNonExistenFeedback = () => {
     });
 }
 
+
+
+
+export default  function () {
+    createFeedback ();
+    createFeedbackInvalidData ();
+    createFeedbackNoData ();
+    createFeedbackNoText ();
+    createFeedbackNoTitle();
+    getAllFeedback();
+    deleteFeedback();
+    deleteNonExistenFeedback();
+}
+
