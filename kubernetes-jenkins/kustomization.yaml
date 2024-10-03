@@ -1,0 +1,7 @@
+resources:
+  - jenkins-admin-role.yaml
+  - jenkins-as.yaml
+  - jenkins-pod-template.yaml
+  - jenkins-as-role-binding.yaml
+  - jenkins-deployment-role.yaml
+  - jenkins-slave-pod.yaml  # Asegúrate de que este archivo exista también
