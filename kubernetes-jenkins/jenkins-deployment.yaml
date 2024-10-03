@@ -1,0 +1,164 @@
+# 1) ClusterRole para Jenkins
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jenkins-sa-admin
+  namespace: default
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+
+---
+# 2) Role para despliegue de Jenkins
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role 
+metadata:
+  name: jenkins-deployer-role
+  namespace: default
+rules:
+  - apiGroups: [""]  # Para servicios
+    resources: ["services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["apps"]  # Para despliegues
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["autoscaling"]  # Para HPA
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+# 3) Pod de Jenkins
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jenkins-slave-pod  # Asegúrate de que esto esté presente
+  namespace: default
+  labels:
+    jenkins: slave
+spec:
+  serviceAccountName: jenkins-sa
+  containers:
+  - name: docker
+    image: docker:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
+  - name: kubectl
+    image: rosaflores/kubectl:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+  - name: k6
+    image: rosaflores/k6:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+  volumes:
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
+
+---
+# 4) RoleBinding para Jenkins
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-sa-role-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: jenkins-sa
+  namespace: default
+roleRef:
+  kind: Role 
+  name: jenkins-deployer-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# 5) ServiceAccount para Jenkins
+apiVersion: v1 
+kind: ServiceAccount
+metadata:
+  name: jenkins-sa
+  namespace: default
+
+---
+# 6) Servicio para Jenkins
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: default
+spec:
+  type: NodePort  # O LoadBalancer, según tu necesidad
+  ports:
+    - port: 8080    # Puerto del servicio
+      targetPort: 8080  # Puerto al que el contenedor escucha
+      protocol: TCP
+  selector:
+    app: jenkins  # Debe coincidir con las etiquetas de tus pods de Jenkins
+
+---
+# 7) ClusterRoleBinding para Jenkins
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jenkins-sa-admin-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: jenkins-sa
+  namespace: default
+roleRef:
+  kind: ClusterRole 
+  name: jenkins-sa-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# 8) Deployment para Jenkins
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins-sa
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:2.375.3   # Cambia a la versión que necesites
+        ports:
+        - containerPort: 8080

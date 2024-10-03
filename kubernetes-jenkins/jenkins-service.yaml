@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: default
+spec:
+  type: NodePort  # O LoadBalancer, según tu necesidad
+  ports:
+    - port: 8080    # Puerto del servicio
+      targetPort: 8080  # Puerto al que el contenedor escucha
+      protocol: TCP
+  selector:
+    app: jenkins  # Debe coincidir con las etiquetas de tus pods de Jenkins
