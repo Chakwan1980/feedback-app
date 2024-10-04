@@ -1,18 +1,16 @@
 # Build the backend app container
 docker build \
-    -t feedback-app:v1\
+    -t feedback-app:v4.5 \
     -t feedback-app:latest \
-    -t rosaflores/feedback-app:v1\
+    -t rosaflores/feedback-app:v4.5 \
     -t rosaflores/feedback-app:latest .
+
+# Push the images to the Docker Hub
+docker push rosaflores/feedback-app:v4.5
+docker push rosaflores/feedback-app:latest
 
 # Create a docker network for the app
 docker network create feedback-app-nw
-
-#Push the images to the Docker Hub
-docker push rosaflores/feedback-app:v1
-docker push rosaflores/feedback-app:latest
-
-docker push rosaflores/feedback-app:latest
 
 # Run the postgres database container
 docker run \
@@ -45,7 +43,6 @@ docker stop feedback-app postgres-db
 
 # Remove the containers
 docker rm feedback-app postgres-db
-
 
 # Start the app with Docker Compose
 docker-compose up --build

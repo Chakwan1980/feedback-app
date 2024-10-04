@@ -1,73 +1,78 @@
 pipeline {
     agent {
         kubernetes {
-            cloud 'kubernetes'
             label 'jenkins-docker-agent'
-            yaml """
-            apiVersion: v1
-            kind: Pod
-            spec:
-              containers:
-                - name: jnlp
-                  image: jenkins/inbound-agent:latest
-                  args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-                  resourceLimits:
-                    cpu: "200m"
-                    memory: "512Mi"
-                - name: docker
-                  image: docker:latest
-                  command: ['cat']
-                  tty: true
-                  resourceLimits:
-                    cpu: "500m"
-                    memory: "1Gi"
-            """
+            yamlFile 'kubernetes_jenkins/jenkins-pod-template.yaml'
         }
+    }
+
+    triggers {
+        pollSCM('H/2 * * * *')
     }
     
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout del repositorio
-                checkout scm
-            }
-        }
-        stage('Build') {
-            steps {
-                script {
-                    // Comando para construir tu imagen Docker
-                    sh 'docker build -t my-image:${env.BUILD_ID} .'
-                }
-            }
-        }
-        stage('Push') {
-            steps {
-                script {
-                    // Comando para enviar tu imagen a Docker Hub
-                    sh 'docker push my-image:${env.BUILD_ID}'
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                script {
-                    // Comando para desplegar la imagen en Kubernetes
-                    sh 'kubectl apply -f deployment.yaml'
-                }
-            }
-        }
+    environment {
+        GITHUB_REPO = 'https://github.com/rosaflores/feedback-app.git'
+        DOCKER_IMAGE = 'galaataman/feedback-app:pipeline-test'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-token'
     }
     
-    post {
-        always {
-            echo 'Limpiando el entorno...'
-            cleanWs() // Limpia el workspace
+    stages {        
+        stage('Checkout') {           
+            steps {
+                git url: "${GITHUB_REPO}", branch: 'main'
+            }            
+        }       
+        stage('Docker Build') {   
+            steps {
+                echo 'Building the app...'
+                container('docker') {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+                echo 'Build successful.'
+            }    
         }
-        success {
-            echo 'Pipeline ejecutado con éxito!'
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing the image to Docker Hub...'
+                container('docker') {
+                    script {
+                        docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
+                            sh 'docker push $DOCKER_IMAGE'
+                        }
+                    }  
+                }
+                echo 'Push successful.'
+            }
         }
-        failure {
-            echo 'El pipeline ha fallado!'
+        stage('Kubernetes Deploy Dependencies') {
+            steps {
+                echo 'Deploying to kubernetes cluster...'
+                container('kubectl') {
+                    sh 'kubectl apply -f kubernetes/secret.yaml'
+                    sh 'kubectl apply -f kubernetes/configmap.yaml'
+                    sh 'kubectl apply -f kubernetes/database-volume.yaml'
+                    sh 'kubectl apply -f kubernetes/database-deployment.yaml'
+                } 
+                echo 'Deployment successful.'
+            }
         }
-    }
+        stage('Kubernetes Deploy API') {
+            steps {
+                echo 'Deploying to kubernetes cluster...'
+                container('kubectl') {
+                    sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                } 
+                echo 'Deployment successful.'
+            }
+        }
+        stage('Integration Tests') {
+            steps {
+                echo 'Running integration tests...'
+                container('k6') {
+                    sh 'k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js'
+                }
+                echo 'Integration tests ready.'
+            }
+        }
+    }   
 }

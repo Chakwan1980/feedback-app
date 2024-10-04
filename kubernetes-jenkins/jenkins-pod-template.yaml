@@ -22,7 +22,7 @@ spec:
     - name: docker-socket
       mountPath: /var/run/docker.sock
   - name: kubectl
-    image: galaataman/kubectl:latest
+    image: rosaflores/kubectl:latest
     resources:
       requests:
         memory: "128Mi"
@@ -34,7 +34,7 @@ spec:
     - cat
     tty: true
   - name: k6
-    image: galaataman/k6:latest
+    image: rosaflores/k6:latest
     resources:
       requests:
         memory: "128Mi"
