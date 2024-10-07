@@ -14,7 +14,7 @@ pipeline {
         GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
         DOCKER_CREDENTIALS_ID = 'dockerhub-token'
         DOCKER_REPO = 'rosaflores/feedback-app'
-        IMAGE_TAG = "${BUILD__NUMBER}"
+        IMAGE_TAG = "${BUILD_NUMBER}"  // Corregido de BUILD__NUMBER a BUILD_NUMBER
         DOCKER_IMAGE = "${DOCKER_REPO}:${IMAGE_TAG}"
     }
     
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    sh 'docker build -t $DOCKER_IMAGE .'
+                    sh "docker build -t ${DOCKER_IMAGE} ."  // Usar comillas para interpolación
                 }
                 echo 'Build successful.'
             }    
@@ -39,7 +39,7 @@ pipeline {
                 container('docker') {
                     script {
                         docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
-                            sh 'docker push $DOCKER_IMAGE'
+                            sh "docker push ${DOCKER_IMAGE}"  // Usar comillas para interpolación
                         }
                     }  
                 }
@@ -48,23 +48,23 @@ pipeline {
         }
         stage('Kubernetes Deploy Dependencies') {
             steps {
-                echo 'Deploying to kubernetes cluster...'
+                echo 'Deploying to Kubernetes cluster...'
                 container('kubectl') {
                     sh 'kubectl apply -f kubernetes/secret.yaml'
                     sh 'kubectl apply -f kubernetes/configmap.yaml'
                     sh 'kubectl apply -f kubernetes/database-volume.yaml'
                     sh 'kubectl apply -f kubernetes/database-deployment.yaml'
                 } 
-                echo 'Deployment successful.'
+                echo 'Deployment of dependencies successful.'
             }
         }
         stage('Kubernetes Deploy API') {
             steps {
-                echo 'Deploying to kubernetes cluster...'
+                echo 'Deploying API to Kubernetes cluster...'
                 container('kubectl') {
                     sh 'kubectl apply -f kubernetes/api-deployment.yaml'
                 } 
-                echo 'Deployment successful.'
+                echo 'API deployment successful.'
             }
         }
         stage('Check App Status') {
@@ -76,16 +76,16 @@ pipeline {
                     def url = "http://feedback-app-api-service:3000/feedback"
 
                     for (int i = 0; i < retries; i++) {
-                        def result = sh(script: "curl -s -o /dev/null -w '%{http_code}' $url", returnStdout: true).trim()
+                        def result = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${url}", returnStdout: true).trim()
 
                         if (result == '200') {
                             echo 'App is reachable!'
                             break
                         } else {
-                            echo "App health check ${i + 1}: HTTP $result . Retrying in ${delay} seconds."
+                            echo "App health check ${i + 1}: HTTP $result. Retrying in ${delay} seconds."
                         }
 
-                        if (i == retries -1) {
+                        if (i == retries - 1) {
                             error "App is unreachable after ${retries} attempts."
                         }
 
@@ -98,9 +98,9 @@ pipeline {
             steps {
                 echo 'Running integration tests...'
                 container('k6') {
-                    sh 'k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js'
+                    sh "k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js"
                 }
-                echo 'Integration tests ready.'
+                echo 'Integration tests completed.'
             }
         }
     }   
