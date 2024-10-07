@@ -12,7 +12,7 @@ pipeline {
     
     environment {
         GITHUB_REPO = 'https://github.com/rosaflores/feedback-app.git'
-        DOCKER_IMAGE = 'galaataman/feedback-app:pipeline-test'
+        DOCKER_IMAGE = 'rosaflores/feedback-app:pipeline-test'
         DOCKER_CREDENTIALS_ID = 'dockerhub-token'
     }
     
