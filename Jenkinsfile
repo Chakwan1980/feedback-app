@@ -68,7 +68,7 @@ pipeline {
                         // Copia de seguridad del archivo antes de modificarlo
                         sh 'cp kubernetes/api-deployment.yaml kubernetes/api-deployment.yaml.bak'
                         // Asegúrate de que la línea que estás buscando en el archivo sea la correcta
-                        sh 'sed -i "s|image: galaataman/feedback-app:latest|image: ${DOCKER_IMAGE}|g" kubernetes/api-deployment.yaml'
+                        sh 'sed -i "s|image: rosaflores/feedback-app:latest|image: ${DOCKER_IMAGE}|g" kubernetes/api-deployment.yaml'
                         sh 'kubectl apply -f kubernetes/api-deployment.yaml'
                     }
                 } 
