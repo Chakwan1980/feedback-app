@@ -1,5 +1,8 @@
 import http from 'k6/http';
 import { check } from 'k6';
+import {Rate} from 'k6/metrics';
+
+exi
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
 
