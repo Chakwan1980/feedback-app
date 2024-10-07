@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Variables
-DOCKER_IMAGE_NAME="rosaflores/kubectl"
-DOCKERFILE_NAME="kubectl_dockerfile"
+DOCKER_IMAGE_NAME="rosaflores/k6"
+DOCKERFILE_NAME="k6_dockerfile"
 DOCKER_TAG="latest"
 
 # Check if the Dockerfile exists
