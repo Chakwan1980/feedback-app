@@ -13,7 +13,7 @@ pipeline {
     environment {
         GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
         DOCKER_IMAGE = 'rosaflores/feedback-app:pipeline-test'
-        DOCKER_CREDENTIALS_ID = 'dockerhub-token'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-token'  // Solo si necesitas credenciales para Docker
     }
     
     stages {        
@@ -80,7 +80,7 @@ pipeline {
                             echo 'App is reachable!'
                             break
                         } else {
-                            echo "App health check ${i + 1}: HTTP $result . Retrying in ${delay} seconds."
+                            echo "App health check ${i + 1}: HTTP $result. Retrying in ${delay} seconds."
                         }
 
                         if (i == retries -1) {
