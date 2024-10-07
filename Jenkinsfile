@@ -12,8 +12,10 @@ pipeline {
     
     environment {
         GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
-        DOCKER_IMAGE = 'rosaflores/feedback-app:pipeline-test'
         DOCKER_CREDENTIALS_ID = 'dockerhub-token'
+        DOCKER_REPO = 'rosaflores/feedback-app'
+        IMAGE_TAG = "${BUILD__NUMBER}"
+        DOCKER_IMAGE = "${DOCKER_REPO}:${IMAGE_TAG}"
     }
     
     stages {        
