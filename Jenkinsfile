@@ -28,7 +28,6 @@ pipeline {
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    // Cambiado para usar la sintaxis correcta para las variables
                     sh "docker build -t ${DOCKER_IMAGE} ."
                 }
                 echo 'Build successful.'
@@ -39,7 +38,6 @@ pipeline {
                 echo 'Pushing the image to Docker Hub...'
                 container('docker') {
                     script {
-                        // Cambiado para usar la sintaxis correcta para las variables
                         docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
                             sh "docker push ${DOCKER_IMAGE}"
                         }
@@ -68,7 +66,7 @@ pipeline {
                         // Copia de seguridad del archivo antes de modificarlo
                         sh 'cp kubernetes/api-deployment.yaml kubernetes/api-deployment.yaml.bak'
                         // Asegúrate de que la línea que estás buscando en el archivo sea la correcta
-                        sh 'sed -i "s|image: rosaflores/feedback-app:latest|image: ${DOCKER_IMAGE}|g" kubernetes/api-deployment.yaml'
+                        sh "sed -i 's|image: rosaflores/feedback-app:latest|image: ${DOCKER_IMAGE}|g' kubernetes/api-deployment.yaml"
                         sh 'kubectl apply -f kubernetes/api-deployment.yaml'
                     }
                 } 
@@ -112,7 +110,7 @@ pipeline {
                 container('k6') {
                     sh 'k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js'
                 }
-                echo 'Integration tests ready.'
+                echo 'Integration tests completed.'
             }
         }
     }   
