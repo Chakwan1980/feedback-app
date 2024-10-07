@@ -2,7 +2,7 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-docker-agent'
-            yamlFile 'kubernetes-jenkins/jenkins-pod-template.yaml'
+            yamlFile 'kubernetes_jenkins/jenkins-pod-template.yaml'
         }
     }
 
@@ -11,10 +11,10 @@ pipeline {
     }
     
     environment {
-        GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
+        GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'        
         DOCKER_CREDENTIALS_ID = 'dockerhub-token'
         DOCKER_REPO = 'rosaflores/feedback-app'
-        IMAGE_TAG = "${BUILD_NUMBER}"  // Corregido de BUILD__NUMBER a BUILD_NUMBER
+        IMAGE_TAG = "${BUILD_NUMBER}"
         DOCKER_IMAGE = "${DOCKER_REPO}:${IMAGE_TAG}"
     }
     
@@ -28,7 +28,8 @@ pipeline {
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    sh "docker build -t ${DOCKER_IMAGE} ."  // Usar comillas para interpolación
+                    // Cambiado para usar la sintaxis correcta para las variables
+                    sh "docker build -t ${DOCKER_IMAGE} ."
                 }
                 echo 'Build successful.'
             }    
@@ -38,8 +39,9 @@ pipeline {
                 echo 'Pushing the image to Docker Hub...'
                 container('docker') {
                     script {
+                        // Cambiado para usar la sintaxis correcta para las variables
                         docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
-                            sh "docker push ${DOCKER_IMAGE}"  // Usar comillas para interpolación
+                            sh "docker push ${DOCKER_IMAGE}"
                         }
                     }  
                 }
@@ -55,16 +57,22 @@ pipeline {
                     sh 'kubectl apply -f kubernetes/database-volume.yaml'
                     sh 'kubectl apply -f kubernetes/database-deployment.yaml'
                 } 
-                echo 'Deployment of dependencies successful.'
+                echo 'Deployment successful.'
             }
         }
         stage('Kubernetes Deploy API') {
             steps {
-                echo 'Deploying API to Kubernetes cluster...'
+                echo 'Deploying to Kubernetes cluster...'
                 container('kubectl') {
-                    sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                    script {
+                        // Copia de seguridad del archivo antes de modificarlo
+                        sh 'cp kubernetes/api-deployment.yaml kubernetes/api-deployment.yaml.bak'
+                        // Asegúrate de que la línea que estás buscando en el archivo sea la correcta
+                        sh 'sed -i "s|image: galaataman/feedback-app:latest|image: ${DOCKER_IMAGE}|g" kubernetes/api-deployment.yaml'
+                        sh 'kubectl apply -f kubernetes/api-deployment.yaml'
+                    }
                 } 
-                echo 'API deployment successful.'
+                echo 'Deployment successful.'
             }
         }
         stage('Check App Status') {
@@ -76,13 +84,17 @@ pipeline {
                     def url = "http://feedback-app-api-service:3000/feedback"
 
                     for (int i = 0; i < retries; i++) {
-                        def result = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${url}", returnStdout: true).trim()
+                        try {
+                            def result = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${url}", returnStdout: true).trim()
 
-                        if (result == '200') {
-                            echo 'App is reachable!'
-                            break
-                        } else {
-                            echo "App health check ${i + 1}: HTTP $result. Retrying in ${delay} seconds."
+                            if (result == '200') {
+                                echo 'App is reachable!'
+                                break
+                            } else {
+                                echo "App health check ${i + 1}: HTTP ${result}. Retrying in ${delay} seconds."
+                            }
+                        } catch (Exception e) {
+                            echo "Error during health check: ${e.message}. Retrying in ${delay} seconds."
                         }
 
                         if (i == retries - 1) {
@@ -98,9 +110,9 @@ pipeline {
             steps {
                 echo 'Running integration tests...'
                 container('k6') {
-                    sh "k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js"
+                    sh 'k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js'
                 }
-                echo 'Integration tests completed.'
+                echo 'Integration tests ready.'
             }
         }
     }   
