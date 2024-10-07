@@ -143,3 +143,5 @@ export default function () {
 
 
 //  k6 run --env BASE_URL=http://127.0.0.1:57025 ./test/feedback-api.integraciontest.js
+
+//  k6 run --env BASE_URL=http://127.0.0.1:57025 ./test/feedback-api.integraciontest.js
