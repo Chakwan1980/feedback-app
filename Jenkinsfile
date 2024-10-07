@@ -19,9 +19,21 @@ pipeline {
     stages {        
         stage('Checkout') {           
             steps {
-                git url: "${GITHUB_REPO}", branch: 'main'
+                script {
+                    echo 'Checking out the code from GitHub...'
+                    // Hacer un checkout completo
+                    git url: "${GITHUB_REPO}", branch: 'main'
+                } 
             }            
-        }       
+        }
+
+        stage('List Files') {
+            steps {
+                echo 'Listing files in workspace...'
+                sh 'ls -R' // Listar todos los archivos y directorios
+            }
+        }
+       
         stage('Docker Build') {   
             steps {
                 echo 'Building the app...'
@@ -31,6 +43,7 @@ pipeline {
                 echo 'Build successful.'
             }    
         }
+
         stage('Docker Push') {
             steps {
                 echo 'Pushing the image to Docker Hub...'
@@ -44,9 +57,10 @@ pipeline {
                 echo 'Push successful.'
             }
         }
+
         stage('Kubernetes Deploy Dependencies') {
             steps {
-                echo 'Deploying to kubernetes cluster...'
+                echo 'Deploying dependencies to Kubernetes cluster...'
                 container('kubectl') {
                     sh 'kubectl apply -f kubernetes/secret.yaml'
                     sh 'kubectl apply -f kubernetes/configmap.yaml'
@@ -56,22 +70,24 @@ pipeline {
                 echo 'Deployment successful.'
             }
         }
+
         stage('Kubernetes Deploy API') {
             steps {
-                echo 'Deploying to kubernetes cluster...'
+                echo 'Deploying API to Kubernetes cluster...'
                 container('kubectl') {
                     sh 'kubectl apply -f kubernetes/api-deployment.yaml'
                 } 
                 echo 'Deployment successful.'
             }
         }
+
         stage('Integration Tests') {
             steps {
                 echo 'Running integration tests...'
                 container('k6') {
                     sh 'k6 run --env BASE_URL=http://feedback-app-api-service:3000 ./tests/feedback-api.integration.js'
                 }
-                echo 'Integration tests ready.'
+                echo 'Integration tests completed.'
             }
         }
     }   
