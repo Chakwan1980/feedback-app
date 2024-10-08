@@ -1,42 +1,49 @@
 import express from 'express';
 import { addFeedback, getAllFeedback, deleteFeedbackByTitle } from '../controllers/feedbackController.js';
-import { feedbackValidation } from '../middleware/validation.js';
+import { feedbackValidation } from '../middleware/validation.js'
 import { sendSuccess, sendError } from '../utils/responseHelper.js';
 
 const feedbackRouter = express.Router();
 
-// POST /feedback - Agrega nuevo feedback
-feedbackRouter.post('/feedback', feedbackValidation, async (req, res) => {
+// POST /feedback - fuegt neues Feedback hinzu
+feedbackRouter.post('/feedback', feedbackValidation, async (req, res) => { 
+
     try {
         const { title, text } = req.body;
         const newFeedback = await addFeedback(title, text);
         sendSuccess(res, newFeedback, "Feedback erfolgreich gespeichert.");
     } catch (error) {
-        console.error("Error al guardar feedback:", error); // Registro de error para más detalles
-        sendError(res, "Fehler beim Speichern des Feedbacks.", 500);
+        sendError(res, "Fehler beim Speichern des Feedbacks.");
     }
+
 });
 
-// GET /feedback - Retorna todos los feedbacks
+// GET /feedback - gibt alle Feedback Eintraege zurueck
 feedbackRouter.get('/feedback', async (req, res) => {
+
     try {
         const feedback = await getAllFeedback();
         sendSuccess(res, feedback, "Feedback erfolgreich abgefragt.");
+
     } catch (error) {
-        console.error("Error al obtener feedback:", error);
-        sendError(res, "Fehler beim Abruf des Feedbacks.", 500);
+        sendError(res, "Fehler beim Abruf des Feedbacks.");
     }
+
 });
 
-// DELETE /feedback/:title - Elimina feedback por título
+// DELETE /feedback/title - Loescht Feedback mit dem gegebenen title
 feedbackRouter.delete('/feedback/:title', async (req, res) => {
+
     try {
         const { title } = req.params;
+
         const result = await deleteFeedbackByTitle(title);
-        sendSuccess(res, null, "Feedback erfolgreich geloescht.", 204); // 204 No Content para éxito en eliminación
+        if (result.rowCount === 0) {
+            return sendError(res, "Feedback nicht gefunden", 404);
+        }
+        sendSuccess(res, null, "Feedback erfolgreich geloescht.");
     } catch (error) {
-        console.error("Error al eliminar feedback:", error);
-        sendError(res, "Fehler beim Loeschen des Feedbacks.", 500);
+        sendError(res, "Fehler beim Loeschen des Feedbacks.");
     }
 });
 

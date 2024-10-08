@@ -3,33 +3,21 @@ import cors from 'cors';
 import feedbackRouter from './routes/feedbackRoutes.js';
 import { createTable } from './db.js';
 
-// Crear la aplicación express
+// Creating the express app
 const app = express();
 const PORT = 3000;
 
-// Configuración de CORS
+// Setup CORS
 app.use(cors());
-// Middleware para parsear JSON
+// Middleware for parsing JSON
 app.use(express.json());
 
-// Creación de la tabla de feedbacks y manejo de errores
-const startServer = async () => {
-    try {
-        // Asegurarse de que la tabla se haya creado antes de iniciar el servidor
-        await createTable();
-        console.log('Tabla de feedback creada o ya existente.');
-        
-        // Uso del router
-        app.use('/', feedbackRouter);
+// Creating the feedback table
+createTable();
 
-        // Iniciar la aplicación
-        app.listen(PORT, () => {
-            console.log(`Server laeuft auf http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.error('Error al crear la tabla o iniciar el servidor:', error);
-    }
-};
+app.use('/', feedbackRouter);
 
-// Llamar a la función para iniciar el servidor
-startServer();
+// Start the app
+app.listen(PORT, ()=> {
+    console.log(`Server laeuft auf http://localhost:${PORT}`);
+});
