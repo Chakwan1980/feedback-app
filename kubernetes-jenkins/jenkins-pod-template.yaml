@@ -4,6 +4,7 @@ metadata:
   name: jenkins-slave
   labels:
     jenkins: slave
+    app: jenkins  # Agrega esta línea
 spec:
   serviceAccountName: jenkins-sa
   containers:
