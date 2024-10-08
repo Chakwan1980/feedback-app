@@ -28,7 +28,8 @@ pipeline {
             steps {
                 echo 'Building the app...'
                 container('docker') {
-                    sh 'docker build -t $DOCKER_IMAGE .'
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+
                 }
                 echo 'Build successful.'
             }    
