@@ -1,4 +1,4 @@
-import { pool } from '../utils/db.js';  // Asegúrate de tener el path correcto
+import { pool } from '../db.js';  // Asegúrate de tener el path correcto
 
 // Agregar feedback
 export const addFeedback = async (title, text) => {

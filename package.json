@@ -2,7 +2,7 @@
   "type": "module",
   "name": "feedback-app",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server.js",
@@ -16,7 +16,6 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-validator": "^7.2.0",
-    "node": "^20.18.0",
     "pg": "^8.12.0"
   },
   "devDependencies": {
