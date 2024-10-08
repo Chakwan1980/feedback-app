@@ -29,7 +29,6 @@ pipeline {
             steps {
                 echo 'Building the Docker image...'
                 container('docker') {
-                    sh 'ls -la'
                     sh 'docker build -t $DOCKER_IMAGE .'
                 }
                 echo 'Docker build successful.'
@@ -73,7 +72,7 @@ pipeline {
                 container('kubectl') {
                     script {
                         sh '''
-                            sed -i "s|image: rosaflores/feedback-app:latest|image: $DOCKER_IMAGE|g" kubernetes/api-deployment.yaml
+                            sed -i "s|image: galaataman/feedback-app:latest|image: $DOCKER_IMAGE|g" kubernetes/api-deployment.yaml
                         '''
                         sh '''
                             kubectl apply -f kubernetes/api-deployment.yaml
