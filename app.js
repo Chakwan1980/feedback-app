@@ -4,8 +4,7 @@ import cors from 'cors';
 
 // Creating the express app
 const app = express();
-const PORT = 3000
-;
+const PORT = 3000;
 
 // Setup CORS
 app.use(cors());
@@ -60,45 +59,6 @@ app.post('/feedback', async (req, res) => {
 
 });
 
-
-// GET /feedback - gibt alle Feedback Eintraege zurueck
-app.get('/feedback', async (req, res) => {
-
-    try {
-        const query = `SELECT * FROM feedback;`;
-        const result = await pool.query(query);
-        res.status(200).json(result.rows);
-
-    } catch (error) {
-        res.status(500).json({ message: "Fehler beim Abrufen des Feedbacks." });
-    }
-
-});
-
-// DELETE /feedback/title - Loescht Feedback mit dem gegebenen title
-app.delete('/feedback/:title', async (req, res) => {
-    const { title } = req.params;
-
-    try {
-        const query = `DELETE FROM feedback WHERE title = $1;`;
-        const result = await pool.query(query, [title]);
-
-        if ( result.rowCount === 0 ) {
-            return res.status(404).json({ message: "Feedback nicht gefunden." });
-        }
-
-        res.status(200).json({ message: "Feedback erfolgreich geloescht." });
-
-    } catch (error) {
-        res.status(500).json({ message: "Fehler beim Loeschen des Feedbacks." });
-    }
-
-});
-
-// Start the app
-app.listen(PORT, ()=> {
-    console.log(`Server laeuft auf http://localhost:${PORT}`);
-});
 
 // GET /feedback - gibt alle Feedback Eintraege zurueck
 app.get('/feedback', async (req, res) => {
