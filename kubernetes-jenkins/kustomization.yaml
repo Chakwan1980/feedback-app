@@ -1,9 +1,0 @@
-resources:
-  - jenkins-admin-role.yaml
-  - jenkins-sa.yaml
-  - jenkins-pod-template.yaml
-  - jenkins-sa-role-binding.yaml
-  - jenkins-deployment-role.yaml
-
-  
-  

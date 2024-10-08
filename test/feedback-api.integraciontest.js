@@ -31,7 +31,7 @@ const createFeedback = () => {
     const response = http.post(`${BASE_URL}/feedback`, payload, { headers });
 
     addCheck(response, {
-        'POST /feedback valid data: status code 201 (Created)': (res) => res.status === 200,
+        'POST /feedback valid data: status code 201 (Created)': (res) => res.status === 201,
         'POST /feedback response has message': (res) => res.json('message') === 'Feedback erfolgreich gespeichert.'
     });
 };
@@ -140,7 +140,6 @@ export default function () {
     deleteFeedback();
     deleteNonExistentFeedback();
 }
-
 
 //  k6 run --env BASE_URL=http://127.0.0.1:57025 ./test/feedback-api.integraciontest.js
 

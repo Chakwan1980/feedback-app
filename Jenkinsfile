@@ -63,7 +63,7 @@ pipeline {
                 echo 'Deploying to kubernetes cluster...'
                 container('kubectl') {
                     script {
-                        sh 'sed -i "s|image: rosaflores/feedback-app:latest|image: $DOCKER_IMAGE|g" kubernetes/api-deployment.yaml'
+                        sh "sed -i 's|image: rosaflores/feedback-app:latest|image: $DOCKER_IMAGE|g' kubernetes/api-deployment.yaml"
                         sh 'kubectl apply -f kubernetes/api-deployment.yaml'
                     }
                 } 

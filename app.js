@@ -4,7 +4,8 @@ import cors from 'cors';
 
 // Creating the express app
 const app = express();
-const PORT = 3000;
+const PORT = 3000
+;
 
 // Setup CORS
 app.use(cors());
