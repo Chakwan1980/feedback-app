@@ -4,7 +4,6 @@ metadata:
   name: jenkins-slave
   labels:
     jenkins: slave
-    app: jenkins  # Agrega esta línea
 spec:
   serviceAccountName: jenkins-sa
   containers:
@@ -37,6 +36,18 @@ spec:
     tty: true
   - name: k6
     image: rosaflores/k6:latest
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    command:
+    - cat
+    tty: true
+  - name: node
+    image: node:latest
     resources:
       requests:
         memory: "128Mi"
