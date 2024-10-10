@@ -2,7 +2,7 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-docker-agent'
-            yamlFile 'kubernetes_jenkins/jenkins-pod-template.yaml'
+            yamlFile 'kubernetes-jenkins/jenkins-pod-template.yaml'
         }
     }
 
