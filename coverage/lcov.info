@@ -1,5 +1,5 @@
 TN:
-SF:src\controllers\feedbackController.js
+SF:src/controllers/feedbackController.js
 FN:3,(anonymous_0)
 FN:10,(anonymous_1)
 FN:17,(anonymous_2)
@@ -26,7 +26,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src\middleware\errorHandler.js
+SF:src/middleware/errorHandler.js
 FN:1,(anonymous_0)
 FNF:1
 FNH:1
@@ -40,7 +40,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src\middleware\validation.js
+SF:src/middleware/validation.js
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -58,7 +58,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:src\routes\feedbackRoutes.js
+SF:src/routes/feedbackRoutes.js
 FN:9,(anonymous_0)
 FN:22,(anonymous_1)
 FN:35,(anonymous_2)
@@ -95,7 +95,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:src\utils\responseHelper.js
+SF:src/utils/responseHelper.js
 FN:1,(anonymous_0)
 FN:5,(anonymous_1)
 FNF:2
