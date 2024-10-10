@@ -8,10 +8,6 @@ RUN npm install
 
 COPY . /app
 
-# Crear un usuario y cambiar a él
-RUN useradd -ms /bin/bash appuser
-USER appuser
-
 EXPOSE 3000
 
-CMD ["npm", "test"]
+CMD ["npm", "run", "dev"]

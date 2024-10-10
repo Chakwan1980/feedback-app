@@ -35,11 +35,6 @@ services:
     depends_on:
       postgres_db:
         condition: service_healthy
-    command: ["npm", "test"]  # Cambia esto para ejecutar pruebas unitarias
-    volumes:
-      - .:/app  # Monta el directorio actual en /app dentro del contenedor
-    
-
 
 networks:
   feedback-app-nw:
@@ -47,6 +42,8 @@ networks:
 
 volumes:
   feedback-app-data:
+
+
 
 
 
