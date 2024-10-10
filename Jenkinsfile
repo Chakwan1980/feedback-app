@@ -2,7 +2,7 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-docker-agent'
-            yamlFile 'kubernetes-jenkins/jenkins-pod-template.yaml'
+            yamlFile 'kubernetes_jenkins/jenkins-pod-template.yaml'
         }
     }
 
@@ -24,6 +24,18 @@ pipeline {
                 echo 'Checking out code...'
                 git url: "${GITHUB_REPO}", branch: 'main'
             }            
+        }
+        stage('Run Unit Tests') {
+            steps {
+                echo 'Running unit tests...'
+                container('node') {
+                    sh '''
+                        npm install
+                        npm test -- --maxWorkers=50%
+                    '''
+                }
+                echo 'Unit tests completed successfully.'
+            }
         }       
         stage('Docker Build') {   
             steps {
@@ -88,7 +100,7 @@ pipeline {
                 echo 'Waiting for the App to become reachable...'
                 container('kubectl') {
                     script {
-                        def retries = 10
+                        def retries = 30
                         def delay = 10
                         def url = "http://feedback-app-api-service:3000/feedback" 
 
