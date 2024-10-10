@@ -88,7 +88,7 @@ pipeline {
                 echo 'Waiting for the App to become reachable...'
                 container('kubectl') {
                     script {
-                        def retries = 30
+                        def retries = 10
                         def delay = 10
                         def url = "http://feedback-app-api-service:3000/feedback" 
 
