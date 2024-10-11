@@ -1,23 +1,28 @@
+// src/server.js
 import express from 'express';
 import cors from 'cors';
 import feedbackRouter from './routes/feedbackRoutes.js';
 import { createTable } from './db.js';
+import { errorHandler } from './middleware/errorHandler.js'; // Importar el middleware
 
-// Creating the express app
 const app = express();
 const PORT = 3000;
 
-// Setup CORS
+// Configuración de CORS
 app.use(cors());
-// Middleware for parsing JSON
+// Middleware para parsear JSON
 app.use(express.json());
 
-// Creating the feedback table
+// Crear la tabla de retroalimentación
 createTable();
 
+// Rutas
 app.use('/', feedbackRouter);
 
-// Start the app
-app.listen(PORT, ()=> {
+// Middleware de manejo de errores
+app.use(errorHandler); // Asegúrate de que este middleware esté al final
+
+// Iniciar la aplicación
+app.listen(PORT, () => {
     console.log(`Server laeuft auf http://localhost:${PORT}`);
 });

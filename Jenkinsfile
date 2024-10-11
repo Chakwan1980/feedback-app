@@ -28,15 +28,20 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 echo 'Running unit tests...'
-                container('node') {
-                    sh '''
-                        npm install
-                        npm test  -- --maxWorkers=50%
-                    '''
+                container('node') {  // Asegúrate de estar en el contenedor correcto
+                    sh 'npm install -g jest'  // Instalar jest globalmente
+                    sh 'npm install'  // Instalar dependencias locales
+                    sh 'chmod +x node_modules/.bin/jest'  // Asegurarte de que el binario de jest tenga permisos de ejecución
+                    sh 'npm test -- --maxWorkers=50%'  // Ejecutar las pruebas
                 }
-                echo 'Unit tests completed successfully.'
             }
-        }       
+        }
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t ${DOCKER_IMAGE} .'
+            }
+        }      
         stage('Docker Build') {   
             steps {
                 echo 'Building the Docker image...'
