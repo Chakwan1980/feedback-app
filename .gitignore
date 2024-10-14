@@ -1,1 +1,8 @@
 node_modules
+# Ignorar la carpeta .terraform
+.terraform/
+
+# Ignorar archivos de estado de Terraform
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfstate.lock.info
