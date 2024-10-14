@@ -6,3 +6,5 @@ node_modules
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfstate.lock.info
+
+.script/create_aws_parameters.sh
