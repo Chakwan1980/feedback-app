@@ -1,0 +1,93 @@
+[33m87effc6d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m update
+[33m1e8eef5a[m Eliminar claves de acceso y limpiar el historial
+[33m7cfb5a87[m Ignorar script create_aws_parameters.sh
+[33m46593fe1[m Ignorar archivos y directorios de Terraform innecesarios
+[33m2e083622[m[33m ([m[1;31morigin/main[m[33m)[m update
+[33m45c848cb[m Eliminar todos los archivos LFS
+[33ma07182fc[m update
+[33m64ce1ede[m Eliminar archivo grande de LFS
+[33m5ff3701a[m Eliminar archivo de LFS
+[33m20181906[m update
+[33mfb78d4ac[m Remover archivo de LFS
+[33me0b62ee7[m Remove large file from LFS
+[33mfd22ecf8[m Removed LFS tracking
+[33m2f99dc14[m update
+[33m9ce46525[m  update Jenkins
+[33m4cefbfbe[m update
+[33m1f167314[m udpate
+[33mad955af5[m update database with AWS
+[33m4516c242[m json update
+[33ma8af83f7[m  modified Dockerfile
+[33m039c793a[m update Jenkins
+[33mf3d80f49[m update
+[33mc8b03bc6[m update
+[33m72c65012[m Dockerfile modified
+[33m9318ba06[m update
+[33m652da574[m update Jenins
+[33m59f4fbb3[m  modified:   kubernetes-jenkins/jenkins-pod-template.yaml
+[33m016f217e[m update Jenkins
+[33ma0f60902[m limiting the jest resources when runnin unit test in the Jenkins
+[33mcae49576[m update
+[33m120d4fb0[m App.test.js delete
+[33me09d9749[m Adding __test__
+[33m508353e1[m Updated
+[33m65cb2e81[m update
+[33mf4c84955[m update
+[33mb0d643e1[m update
+[33m7ec011b7[m update
+[33mc9b8e061[m update
+[33m023dcda3[m update
+[33mf178f4f7[m update
+[33m6db806b7[m update
+[33md8da3462[m update
+[33m65f9d636[m update
+[33m641b8019[m update
+[33mee8806bb[m update
+[33m2758ee3a[m udpate
+[33m6fe9779e[m update
+[33m8a9787bd[m update
+[33m48fd958d[m update
+[33mf36f73de[m Updated
+[33me0adda43[m Updated
+[33m6634d65c[m update
+[33m2db4b8ac[m update
+[33m27bf149f[m update
+[33m953bde8d[m update
+[33me51f7b03[m update
+[33m2d3a643a[m update
+[33m297c596e[m update
+[33m80c1bfe6[m  update Jenkins
+[33m9dd9fdcb[m update
+[33mef61c4c4[m update
+[33m4377d980[m actualizacion
+[33m0265b976[m Adding error count metrict to the integration test
+[33m06412b31[m update pod.yaml
+[33m3c6d6aed[m Updated
+[33me7cd3505[m update Jenkins
+[33m9cf2002c[m update in .yaml
+[33m6810f6c3[m ajustes en k6-dockerfile
+[33mf0773933[m Updated Jenkinsfile and feedback-frontend
+[33m37e345e1[m Updated Jenkinsfile and feedback-frontend
+[33m85cc8051[m Updated Jenkinsfile and feedback-frontend
+[33m6a4dfe51[m Updated Jenkinsfile and feedback-frontend
+[33m6e64ad4a[m Updated Jenkinsfile and feedback-frontend
+[33m5d34acd9[m automatization
+[33m8a547830[m actualizations
+[33m4c87f003[m modification .yaml
+[33m237dae2e[m actualization jenkins.yaml
+[33mdc3020eb[m ma
+[33me29ae770[m Add
+[33m4e5b34e2[m Actualization jenkins-pod-template
+[33m13c3ac42[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m, [m[1;32mbackup-master[m[33m)[m Updated Jenkinsfile and feedback-frontend
+[33m25fb2c17[m jenkins-pod-temple
+[33m8ab5dabf[m Agrega jenkins-pod-template.yaml
+[33macba7881[m actulizations
+[33mbe45fe72[m Adding the test runner function for integretion tests
+[33ma07631a2[m Adding Get and delete / feedback  integration tests
+[33m4e0f55cd[m Kubernetesjenkins wurden erstelt
+[33m63138619[m actualization
+[33m5e6ad45e[m neue jenkins.yaml
+[33m4047ab73[m Updated Jenkinsfile and feedback-frontend
+[33me6ff5e66[m Updated Jenkinsfile and feedback-frontend
+[33m32c99705[m add Jenkinsfile
+[33m2e8e61d7[m Initial commit
