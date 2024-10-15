@@ -65,7 +65,6 @@ spec:
           timeoutSeconds: 5
           failureThreshold: 5
           successThreshold: 1
-        
 
 
 
