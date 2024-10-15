@@ -1,16 +1,16 @@
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.71.0"
+        source = "hashicorp/aws"
+        version = "~> 5.71.0"
     }
   }
 
   backend "s3" {
-    bucket         = "terraform-state-feedback-api-432495633482"
-    key            = "terraform/feedback-api/terraform.tfstate"
-    region         = "eu-central-1"
-    encrypt        = true
+    bucket = "terraform-state-feedback-api-273427624300"
+    key = "terraform/feedback-api/terraform.tfstate"
+    region = "eu-central-1"
+    encrypt = true
   }
 }
 
@@ -92,10 +92,10 @@ resource "aws_db_instance" "feedback_db" {
 resource "aws_ssm_parameter" "rds_endpoint" {
     name = "/feedback-app/backend/test/db-host"
     type = "String"
-    value = replace(aws_db_instance.feedback_db.endpoint, ":5432", "")  # Adjust the port number if needed
+    value = replace(aws_db_instance.feedback_db.endpoint, ":5432", "")
 }
 
 output "rds_endpoint" {
-    description = "The endpoint of the RDS Postgres database without the port."
-    value = replace(aws_db_instance.feedback_db.endpoint, ":5432", "")  # Adjust the port number if needed
+    description = "The endpoint of the RDS Postgres database."
+    value = replace(aws_db_instance.feedback_db.endpoint, ":5432", "")
 }
