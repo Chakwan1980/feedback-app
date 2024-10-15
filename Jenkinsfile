@@ -11,7 +11,7 @@ pipeline {
     }
     
     environment {
-        GITHUB_REPO = 'https://github.com/Chakwan1980/feedback-app.git'
+        GITHUB_REPO = 'https://github.com/rosaflores/feedback-app.git'
         DOCKER_CREDENTIALS_ID = 'dockerhub-token'
         DOCKER_REPO = 'rosaflores/feedback-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
@@ -22,23 +22,21 @@ pipeline {
         stage('Checkout') {           
             steps {
                 echo 'Checking out code...'
-                git url: "${GITHUB_REPO}", branch: 'main'  // Cambiado a 'main'
+                git url: "${GITHUB_REPO}", branch: 'main'
             }            
         }
-        
         stage('Run Unit Tests') {
             steps {
                 echo 'Running unit tests...'
                 container('node') {
                     sh '''
                         npm install
-                        npm test -- --maxWorkers=50%
+                        npm test  -- --maxWorkers=50%
                     '''
                 }
                 echo 'Unit tests completed successfully.'
             }
-        }
-        
+        }       
         stage('Terraform Init') {
             steps {
                 echo 'Initializing Terraform...'
@@ -52,7 +50,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Terraform Plan') {
             steps {
                 echo 'Planning Terraform execution...'
@@ -65,7 +62,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Terraform Apply') {
             steps {
                 echo 'Applying Terraform configuration...'
@@ -78,7 +74,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Retrieve RDS Endpoint') {
             steps {
                 echo 'Retrieving the RDS endpoint...'
@@ -101,8 +96,7 @@ pipeline {
                     }
                 }
             }
-        }
-        
+        } 
         stage('Docker Build') {   
             steps {
                 echo 'Building the Docker image...'
@@ -112,7 +106,6 @@ pipeline {
                 echo 'Docker build successful.'
             }    
         }
-        
         stage('Docker Push') {
             steps {
                 echo 'Pushing the Docker image to Docker Hub...'
@@ -126,10 +119,9 @@ pipeline {
                 echo 'Docker image pushed successfully.'
             }
         }
-        
         stage('Kubernetes Deploy App Dependencies') {
             steps {
-                echo 'Deploying API dependencies to Kubernetes cluster...'
+                echo 'Deploying API dependencies to kubernetes cluster...'
                 container('kubectl') {
                     sh 'kubectl apply -f kubernetes/secret.yaml'
                     sh 'kubectl apply -f kubernetes/configmap.yaml'
@@ -139,7 +131,6 @@ pipeline {
                 echo 'Deployment successful.'
             }
         }
-        
         stage('Kubernetes Deploy App') {
             steps {
                 echo 'Deleting previous App deployment...'
@@ -164,13 +155,12 @@ pipeline {
                 echo 'New App deployment created successfully.'
             }
         }
-        
         stage('Check App Status') {
             steps {
                 echo 'Waiting for the App to become reachable...'
                 container('kubectl') {
                     script {
-                        def retries = 10
+                        def retries = 30
                         def delay = 10
                         def url = "http://feedback-app-api-service:3000/feedback" 
 
@@ -197,7 +187,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Run Integration Tests') {
             steps {
                 echo 'Running integration tests...'
@@ -208,7 +197,6 @@ pipeline {
             }
         }
     }
-    
     post {
         always {
             echo 'Post: DockerHub URL...'
