@@ -6,13 +6,11 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "terraform-state-feedback-api-273427624300"
-    key = "terraform/feedback-api/terraform.tfstate"
-    region = "eu-central-1"
-    encrypt = true
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }
+
 
 provider "aws" {
     region = "eu-central-1"
